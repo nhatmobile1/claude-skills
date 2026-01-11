@@ -17,7 +17,36 @@ Extended frontend design guidelines with comprehensive mobile responsiveness and
 
 ## Installation
 
-### Option 1: Clone and Configure
+### Option 1: Symlink (Recommended)
+
+This method keeps your skills synced automatically and makes the repo portable across machines.
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/claude-skills.git ~/Documents/projects/claude-skills
+   ```
+
+2. Remove existing skills directory and create symlink:
+   ```bash
+   # Backup existing skills if needed
+   mv ~/.claude/skills ~/.claude/skills-backup
+
+   # Create symlink
+   ln -s ~/Documents/projects/claude-skills/skills ~/.claude/skills
+   ```
+
+3. Verify the symlink:
+   ```bash
+   ls -la ~/.claude/skills
+   # Should show: skills -> /Users/YOUR_USERNAME/Documents/projects/claude-skills/skills
+   ```
+
+**Benefits:**
+- Any skills you add to this repo are immediately available in Claude Code
+- Easy to version control and share
+- Portable across machines (just clone and symlink)
+
+### Option 2: Clone and Configure
 
 1. Clone this repository:
    ```bash
@@ -33,12 +62,14 @@ Extended frontend design guidelines with comprehensive mobile responsiveness and
    }
    ```
 
-### Option 2: Direct Copy
+### Option 3: Direct Copy
 
 Copy the skill folders to your local Claude skills directory:
 ```bash
 cp -r skills/* ~/.claude/skills/
 ```
+
+**Note:** With this method, you'll need to re-copy whenever you update skills.
 
 ## Usage
 
