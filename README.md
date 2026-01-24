@@ -2,9 +2,27 @@
 
 A collection of custom skills for Claude Code that extend its capabilities with specialized knowledge and best practices.
 
+## Folder Structure
+
+```
+skills/
+├── frontend/
+│   ├── color-palette/          # Color palette generation & accessibility
+│   ├── design-styles/          # 40+ web design aesthetics
+│   ├── frontend-design-complete/  # All-in-one frontend skill (recommended)
+│   └── frontend-design-v2/     # Mobile responsiveness patterns
+└── ios-development/
+    ├── ios-app-planner/        # Planning checklist & architecture guide
+    ├── ios-coding-best-practices/  # Swift, SwiftUI, CoreData patterns
+    ├── ios-ui-review/          # HIG checklist & accessibility
+    └── SKILL.md                # Main iOS development skill
+```
+
 ## Skills Included
 
-### frontend-design-complete (Recommended)
+### Frontend
+
+#### frontend-design-complete (Recommended)
 
 **All-in-one frontend design skill** that combines the built-in `/frontend-design` aesthetic guidelines with comprehensive mobile responsiveness and cross-element styling consistency. Use this single skill instead of invoking multiple frontend skills.
 
@@ -20,7 +38,7 @@ A collection of custom skills for Claude Code that extend its capabilities with 
 
 ---
 
-### frontend-design-v2
+#### frontend-design-v2
 
 Extended frontend design guidelines with comprehensive mobile responsiveness and cross-element styling consistency. Use alongside the built-in `/frontend-design` skill for production-grade, mobile-first interfaces.
 
@@ -37,7 +55,7 @@ Extended frontend design guidelines with comprehensive mobile responsiveness and
 
 ---
 
-### color-palette
+#### color-palette
 
 Create distinctive, accessible color palettes for UI/web design that avoid generic AI aesthetics. Includes domain-specific curated palettes, color theory guidance, and accessibility validation tools.
 
@@ -57,7 +75,7 @@ Create distinctive, accessible color palettes for UI/web design that avoid gener
 
 ---
 
-### design-styles
+#### design-styles
 
 Comprehensive web design aesthetics guide with 40+ design styles. Use when applying a specific aesthetic (glassmorphism, brutalist, minimalist, etc.) or when recommending styles based on industry, audience, or brand.
 
@@ -72,6 +90,31 @@ Comprehensive web design aesthetics guide with 40+ design styles. Use when apply
 - `references/design-styles-comprehensive-reference.md` - Full style guide
 
 **Invoke:** `/design-styles`
+
+---
+
+### iOS Development
+
+#### ios-development
+
+Comprehensive iOS development guidelines covering Swift, SwiftUI, UIKit, architecture patterns, and Apple platform best practices. Use when building iOS, iPadOS, watchOS, or macOS applications.
+
+**Key Features:**
+- Modern Swift conventions and best practices
+- SwiftUI patterns (state management, view structure, navigation)
+- MVVM architecture with repository pattern
+- Async/await networking with proper error handling
+- Data persistence (SwiftData, UserDefaults)
+- Unit and UI testing patterns
+- Pre-implementation checklist
+- Common pitfalls to avoid
+
+**Includes sub-skills:**
+- `ios-app-planner/` - Planning checklist, architecture guide, tech stack options
+- `ios-coding-best-practices/` - Swift patterns, SwiftUI, architecture, CoreData
+- `ios-ui-review/` - HIG checklist, accessibility guidelines, font guidelines
+
+**Invoke:** `/ios-development`
 
 ## Installation
 
@@ -162,7 +205,7 @@ For frontend projects, invoke these skills together for best results:
 
 Feel free to add new skills or improve existing ones:
 
-1. Create a new folder under `skills/`
+1. Create a new folder under the appropriate category in `skills/` (e.g., `skills/frontend/` or `skills/ios-development/`)
 2. Add a `SKILL.md` file with the skill definition
 3. Follow the skill format with YAML frontmatter
 
@@ -213,6 +256,16 @@ Your skill instructions, guidelines, code examples, etc.
   - 40+ design styles documented
   - Style recommendations by criteria
   - Comprehensive reference guide
+
+### ios-development
+
+- **v1.0** (2025-01-11): Initial release
+  - Swift best practices and naming conventions
+  - SwiftUI patterns and state management
+  - MVVM architecture with repository pattern
+  - Async/await networking
+  - SwiftData and UserDefaults persistence
+  - Unit and UI testing patterns
 
 ## License
 

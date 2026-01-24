@@ -1,0 +1,69 @@
+# Claude Skills
+
+A curated collection of reusable Claude Code skills for frontend design and iOS development.
+
+## Purpose
+
+Extend Claude with production-grade design and development guidelines that prioritize distinctive aesthetics, accessibility, and best practices while avoiding generic AI-generated patterns.
+
+## Skills Included
+
+**Frontend (4 skills):**
+- `frontend-design-complete` - All-in-one: aesthetics + mobile + forms + accessibility (recommended)
+- `frontend-design-v2` - Extended mobile responsiveness patterns
+- `color-palette` - Domain-specific palettes, WCAG validation, color harmony
+- `design-styles` - 40+ documented design aesthetics with recommendations
+
+**iOS (4 skills):**
+- `ios-development` - Comprehensive Swift/SwiftUI patterns, MVVM, networking, testing
+  - `ios-app-planner` - Planning & architecture
+  - `ios-coding-best-practices` - Swift conventions
+  - `ios-ui-review` - HIG compliance, accessibility
+
+## File Structure
+
+```
+claude-skills/
+├── README.md                    # Installation & usage guide
+├── skills/
+│   ├── frontend/
+│   │   ├── frontend-design-complete/  # Recommended all-in-one
+│   │   ├── frontend-design-v2/
+│   │   ├── color-palette/
+│   │   │   ├── SKILL.md
+│   │   │   ├── references/
+│   │   │   └── scripts/         # Python utilities
+│   │   └── design-styles/
+│   └── ios-development/
+│       ├── SKILL.md
+│       ├── ios-app-planner/
+│       ├── ios-coding-best-practices/
+│       └── ios-ui-review/
+└── .claude/                     # Symlinked skills directory
+```
+
+## Key Features
+
+- **Anti-AI-slop guidelines** - Avoid generic cream backgrounds, purple gradients, rounded corners
+- **Mobile-first responsive patterns** - Real-world edge cases and solutions
+- **Accessibility-first** - WCAG contrast validation, semantic CSS variables
+- **Modern Swift best practices** - async/await, SwiftData, MVVM with repositories
+- **Pre-implementation checklists** - Common pitfalls to avoid
+
+## Installation
+
+Three options:
+1. **Symlink** to `~/.claude/skills` (recommended)
+2. **Clone** directly into project
+3. **Copy** specific skill folders
+
+## Usage
+
+Invoke in Claude Code:
+- `/frontend-design-complete`
+- `/color-palette`
+- `/ios-development`
+
+## Status
+
+Active development, last updated Jan 2025
