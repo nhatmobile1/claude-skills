@@ -24,14 +24,13 @@ Extend Claude with production-grade design and development guidelines that prior
 ```
 claude-skills/
 ├── README.md                    # Installation & usage guide
-├── skills/
-│   ├── frontend/
-│   │   ├── frontend-design-complete/  # Recommended all-in-one
-│   │   ├── color-palette/
-│   │   │   ├── SKILL.md
-│   │   │   ├── references/
-│   │   │   └── scripts/         # Python utilities
-│   │   └── design-styles/
+├── skills/                      # Symlinked to ~/.claude/skills
+│   ├── frontend-design-complete/  # Recommended all-in-one (31 Parts)
+│   ├── color-palette/
+│   │   ├── SKILL.md
+│   │   ├── references/
+│   │   └── scripts/             # Python utilities
+│   ├── design-styles/
 │   └── ios-development/
 │       ├── SKILL.md
 │       ├── ios-app-planner/

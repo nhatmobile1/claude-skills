@@ -6,15 +6,14 @@ A collection of custom skills for Claude Code that extend its capabilities with 
 
 ```
 skills/
-├── frontend/
-│   ├── color-palette/          # Color palette generation & accessibility
-│   ├── design-styles/          # 40+ web design aesthetics
-│   └── frontend-design-complete/  # All-in-one frontend skill (recommended)
+├── frontend-design-complete/  # All-in-one frontend skill (recommended, 31 Parts)
+├── color-palette/             # Color palette generation & accessibility
+├── design-styles/             # 40+ web design aesthetics
 └── ios-development/
-    ├── ios-app-planner/        # Planning checklist & architecture guide
+    ├── SKILL.md               # Main iOS development skill
+    ├── ios-app-planner/       # Planning checklist & architecture guide
     ├── ios-coding-best-practices/  # Swift, SwiftUI, CoreData patterns
-    ├── ios-ui-review/          # HIG checklist & accessibility
-    └── SKILL.md                # Main iOS development skill
+    └── ios-ui-review/         # HIG checklist & accessibility
 ```
 
 ## Skills Included
