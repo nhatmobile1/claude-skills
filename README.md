@@ -9,8 +9,7 @@ skills/
 ├── frontend/
 │   ├── color-palette/          # Color palette generation & accessibility
 │   ├── design-styles/          # 40+ web design aesthetics
-│   ├── frontend-design-complete/  # All-in-one frontend skill (recommended)
-│   └── frontend-design-v2/     # Mobile responsiveness patterns
+│   └── frontend-design-complete/  # All-in-one frontend skill (recommended)
 └── ios-development/
     ├── ios-app-planner/        # Planning checklist & architecture guide
     ├── ios-coding-best-practices/  # Swift, SwiftUI, CoreData patterns
@@ -24,34 +23,23 @@ skills/
 
 #### frontend-design-complete (Recommended)
 
-**All-in-one frontend design skill** that combines the built-in `/frontend-design` aesthetic guidelines with comprehensive mobile responsiveness and cross-element styling consistency. Use this single skill instead of invoking multiple frontend skills.
+**All-in-one frontend design skill** with 31 Parts covering aesthetics, implementation, and best practices. Use this single skill for all frontend design work.
 
 **Key Features:**
-- Bold aesthetic direction and AI-slop avoidance (from built-in skill)
-- Mobile layout patterns (hero sections, forms, navigation)
-- Form element consistency across inputs, selects, textareas
-- Color contrast and visibility guidelines
-- Pre-implementation checklist
-- Common issues quick reference
+- Bold aesthetic direction and AI-slop avoidance
+- Modern CSS techniques (container queries, :has(), scroll-driven animations, view transitions, cascade layers)
+- Performance-first design (Core Web Vitals, CLS prevention, font/image optimization)
+- Dark mode & theming (token architecture, system preference detection, multi-theme support)
+- AI-era design patterns (streaming UI, confidence indicators, human-in-the-loop)
+- Mobile-first responsive patterns
+- Fluid typography, responsive images, component architecture
+- Interaction design, data visualization, dashboard patterns
+- Internationalization & RTL support
+- Cognitive accessibility (ADHD, autism, dyslexia, vestibular)
+- Design token architecture (three-tier system)
+- Comprehensive pre-implementation checklist
 
 **Invoke:** `/frontend-design-complete`
-
----
-
-#### frontend-design-v2
-
-Extended frontend design guidelines with comprehensive mobile responsiveness and cross-element styling consistency. Use alongside the built-in `/frontend-design` skill for production-grade, mobile-first interfaces.
-
-**Note:** Consider using `/frontend-design-complete` instead, which merges this with the built-in skill.
-
-**Key Features:**
-- Mobile layout patterns (hero sections, forms, navigation)
-- Form element consistency across inputs, selects, textareas
-- Color contrast and visibility guidelines
-- Pre-implementation checklist
-- Common issues quick reference
-
-**Invoke:** `/frontend-design-v2`
 
 ---
 

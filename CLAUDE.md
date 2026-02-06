@@ -9,7 +9,7 @@ Extend Claude with production-grade design and development guidelines that prior
 ## Skills Included
 
 **Frontend (3 skills):**
-- `frontend-design-complete` - All-in-one: aesthetics + mobile + forms + accessibility (recommended)
+- `frontend-design-complete` - All-in-one: aesthetics, mobile, modern CSS, performance, dark mode, AI patterns, accessibility (recommended)
 - `color-palette` - Domain-specific palettes, WCAG validation, color harmony
 - `design-styles` - 40+ documented design aesthetics with recommendations
 
@@ -42,10 +42,14 @@ claude-skills/
 ## Key Features
 
 - **Anti-AI-slop guidelines** - Avoid generic cream backgrounds, purple gradients, rounded corners
+- **Modern CSS** - Container queries, :has(), scroll-driven animations, view transitions, cascade layers
+- **Performance-first** - Core Web Vitals, CLS prevention, font loading, image optimization
+- **Dark mode & theming** - Token architecture, system preference detection, multi-theme support
+- **AI-era patterns** - Streaming UI, confidence indicators, human-in-the-loop controls
 - **Mobile-first responsive patterns** - Real-world edge cases and solutions
-- **Accessibility-first** - WCAG contrast validation, semantic CSS variables
+- **Accessibility-first** - WCAG contrast, cognitive accessibility, internationalization
 - **Modern Swift best practices** - async/await, SwiftData, MVVM with repositories
-- **Pre-implementation checklists** - Common pitfalls to avoid
+- **Pre-implementation checklists** - 31 Parts with comprehensive verification
 
 ## Installation
 
@@ -63,4 +67,4 @@ Invoke in Claude Code:
 
 ## Status
 
-Active development, last updated Jan 2025
+Active development, last updated Feb 2026
