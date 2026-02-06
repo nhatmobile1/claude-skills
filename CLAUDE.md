@@ -8,9 +8,8 @@ Extend Claude with production-grade design and development guidelines that prior
 
 ## Skills Included
 
-**Frontend (4 skills):**
+**Frontend (3 skills):**
 - `frontend-design-complete` - All-in-one: aesthetics + mobile + forms + accessibility (recommended)
-- `frontend-design-v2` - Extended mobile responsiveness patterns
 - `color-palette` - Domain-specific palettes, WCAG validation, color harmony
 - `design-styles` - 40+ documented design aesthetics with recommendations
 
@@ -28,7 +27,6 @@ claude-skills/
 ├── skills/
 │   ├── frontend/
 │   │   ├── frontend-design-complete/  # Recommended all-in-one
-│   │   ├── frontend-design-v2/
 │   │   ├── color-palette/
 │   │   │   ├── SKILL.md
 │   │   │   ├── references/
@@ -39,7 +37,6 @@ claude-skills/
 │       ├── ios-app-planner/
 │       ├── ios-coding-best-practices/
 │       └── ios-ui-review/
-└── .claude/                     # Symlinked skills directory
 ```
 
 ## Key Features
