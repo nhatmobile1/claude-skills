@@ -1,9 +1,6 @@
 ---
 name: frontend-design-complete
-description: Create distinctive, production-grade frontend interfaces with high design quality AND comprehensive mobile responsiveness. Combines aesthetic guidelines with mobile-first patterns, form consistency, and color contrast rules. Use this as your single frontend design skill.
-version: 3.0.0
-author: Design Styles Explorer Project
-updated: 2025-01-30
+description: Create distinctive, production-grade frontend interfaces with high design quality. Covers aesthetics, mobile-first patterns, modern CSS, performance (Core Web Vitals), dark mode/theming, AI-era patterns, interaction design, data visualization, fluid typography, responsive images, component architecture, forms, internationalization, cognitive accessibility, design tokens, and cascade layers. Use this as your single frontend design skill.
 ---
 
 # Complete Frontend Design Guidelines
@@ -291,6 +288,8 @@ function StyleSelector({ items, categories }) {
 }
 ```
 
+**Modern Alternative**: Container queries (Part 18) can replace many media queries by making components responsive to their container width rather than the viewport. For fluid font sizing without breakpoints, see Part 24.
+
 ---
 
 ## Part 3: Form Element Consistency
@@ -456,6 +455,12 @@ Before finalizing any frontend design, verify:
 | Horizontal scroll on selections | Too many items | Use accordion pattern |
 | Textarea looks wrong | Pill border-radius | Use smaller radius for textarea |
 | Design looks "AI-generated" | AI slop patterns | Follow aesthetic guidelines, be bold |
+| Layout shift on load | Images without dimensions | Add `width`/`height` or `aspect-ratio` (Part 19) |
+| Dark mode looks washed out | Colors not desaturated | Reduce saturation ~20% for dark mode (Part 20) |
+| AI responses feel broken | No streaming indicator | Add typewriter cursor and phase-based loading (Part 21) |
+| Specificity wars in CSS | No cascade management | Use `@layer` for explicit ordering (Part 31) |
+| Content unreadable in translation | Fixed-width containers | Use logical properties and flexible layouts (Part 28) |
+| Flash of wrong theme | Theme loads after paint | Run theme script in `<head>` (Part 20) |
 
 ---
 
@@ -671,6 +676,8 @@ Support different density contexts (from Carbon):
 }
 ```
 
+For a full three-tier token architecture (constant → semantic → contextual) with multi-theme mapping, see Part 30. For cascade management of token layers, see Part 31.
+
 ---
 
 ## Part 7: Brutalist Design Principles
@@ -825,6 +832,8 @@ Focus animation budget on key moments:
 
 /* Remove will-change after animation completes */
 ```
+
+**Modern CSS Alternatives**: Scroll-driven animations (Part 18) can replace JavaScript Intersection Observer patterns. View Transitions API (Part 18) provides native page transition support. For AI-specific loading and streaming animations, see Part 21.
 
 ---
 
@@ -1039,6 +1048,12 @@ Reference checklist based on WCAG guidelines and A11Y Project standards.
 - [ ] Adequate spacing between touch targets (44x44px minimum)
 - [ ] Touch targets easily activatable
 
+### Cognitive Accessibility
+- [ ] Content chunked into manageable sections (Part 29)
+- [ ] Reduced-motion mode eliminates ALL animation, not just reduces it
+- [ ] Focus mode available to reduce visual noise
+- [ ] Text uses 1.5x line-height minimum, left-aligned (not justified)
+
 ---
 
 ## Part 12: Dieter Rams' 10 Principles for Good Design
@@ -1129,6 +1144,8 @@ Use mathematical ratios for harmonious type hierarchies:
 ```
 
 **Tool**: Use https://typescale.com/ to generate scales with different ratios.
+
+For fluid typography that scales smoothly between breakpoints using `clamp()`, see Part 24. For variable fonts and OpenType features, also Part 24.
 
 ---
 
@@ -1275,6 +1292,2673 @@ From Linear: "Settings are not a design failure."
 - **Design+Code** - https://designcode.io - Design and development
 - **Design System University** - https://designsystem.university - Building systems
 
+### Modern CSS
+- **web.dev/blog** - https://web.dev/blog - Chrome team's CSS and performance updates
+- **Modern CSS** - https://moderncss.dev - Practical modern CSS solutions
+- **State of CSS** - https://stateofcss.com - Annual CSS survey and trends
+- **Scroll-Driven Animations** - https://scroll-driven-animations.style - Interactive demos and examples
+
+### Performance
+- **web.dev/vitals** - https://web.dev/vitals - Core Web Vitals documentation
+- **PageSpeed Insights** - https://pagespeed.web.dev - Performance testing tool
+
+### Fluid Typography
+- **Utopia** - https://utopia.fyi - Fluid type and space scale generator
+- **Fluid Type Scale** - https://www.fluid-type-scale.com - Type scale calculator with clamp()
+
+### AI Interface Design
+- **AI Design Patterns** - https://ai-design-patterns.com - Patterns for AI interfaces
+- **AIverse Design** - https://www.aiverse.design - AI UX pattern library
+
+---
+
+## Part 18: Modern CSS Techniques
+
+These features are baseline-available in all evergreen browsers (2025-2026). No polyfills needed. Use them to reduce JavaScript dependency and build more resilient interfaces.
+
+### Container Queries
+
+Make components responsive to their container, not the viewport. Essential for reusable component libraries.
+
+```css
+/* Define a containment context */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* Component adapts to its container width */
+@container card (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+}
+
+@container card (max-width: 399px) {
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+}
+```
+
+**Key Rule**: Use container queries for component-level responsiveness, media queries for page-level layout. A sidebar card and a main-content card can now use the same component with different layouts.
+
+### The :has() Selector
+
+The most powerful CSS selector added in years. Enables parent-aware styling without JavaScript.
+
+```css
+/* Style parent based on child state */
+.form-group:has(:invalid) {
+  border-color: var(--color-error);
+}
+
+/* Layout changes based on content */
+.card:has(> img) {
+  grid-template-rows: 200px 1fr;
+}
+
+.card:not(:has(> img)) {
+  grid-template-rows: 1fr;
+}
+
+/* Interactive states without JS */
+.nav:has(.dropdown:focus-within) .overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Style sibling based on state */
+.checkbox:has(:checked) + .label {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+```
+
+**Key Rule**: `:has()` eliminates many JavaScript DOM manipulation patterns. Before writing `classList.toggle()` in JS, check if `:has()` can achieve the same result in CSS.
+
+### CSS Subgrid
+
+Align nested grid children to their parent's grid tracks. Solves the perennial "align cards in a grid" problem.
+
+```css
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3; /* title, description, CTA */
+}
+
+/* Titles, descriptions, and CTAs now align across all cards
+   regardless of content length */
+```
+
+### View Transitions API
+
+Animate between view states with native browser support. Replaces complex JavaScript transition libraries.
+
+```css
+/* Define elements that should morph between views */
+.product-image {
+  view-transition-name: product-hero;
+}
+
+.product-title {
+  view-transition-name: product-title;
+}
+
+/* Style the transition */
+::view-transition-old(product-hero) {
+  animation: fadeOut 0.3s ease-out;
+}
+
+::view-transition-new(product-hero) {
+  animation: fadeIn 0.3s ease-in;
+}
+```
+
+```javascript
+/* Trigger a view transition */
+document.startViewTransition(() => {
+  updateDOM(); /* Your state change */
+});
+```
+
+Cross-reference: Part 8 (Motion Design) for animation principles.
+
+### Scroll-Driven Animations
+
+Replace JavaScript Intersection Observer with pure CSS scroll-triggered animations.
+
+```css
+/* Progress bar tied to page scroll */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--color-primary);
+  transform-origin: left;
+  animation: growWidth linear;
+  animation-timeline: scroll();
+}
+
+@keyframes growWidth {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Fade-in on scroll into view */
+.section {
+  animation: fadeInUp linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 100%;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+**Key Rule**: Scroll-driven animations run off-main-thread, making them smoother than JavaScript-based scroll handlers. Always prefer these over Intersection Observer for visual effects.
+
+### CSS Nesting
+
+Write nested styles without a preprocessor. Keeps component styles co-located and readable.
+
+```css
+.card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+
+  & .title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+  }
+
+  & .description {
+    color: var(--text-secondary);
+  }
+
+  &:hover {
+    box-shadow: var(--elevation-2);
+  }
+
+  @media (max-width: 768px) {
+    padding: var(--space-3);
+  }
+}
+```
+
+**Key Rule**: Limit nesting to 3 levels maximum. Deeper nesting creates specificity problems and is hard to read.
+
+### Anchor Positioning
+
+Position tooltips, popovers, and dropdowns relative to anchor elements without JavaScript positioning libraries.
+
+```css
+.trigger {
+  anchor-name: --tooltip-anchor;
+}
+
+.tooltip {
+  position: fixed;
+  position-anchor: --tooltip-anchor;
+  top: anchor(bottom);
+  left: anchor(center);
+  translate: -50% 8px;
+
+  /* Auto-flip if overflowing viewport */
+  position-try-fallbacks: flip-block;
+}
+```
+
+### Popover API
+
+Build dismissable overlays with zero JavaScript. Handles focus trapping, backdrop, and light-dismiss behavior natively.
+
+```html
+<button popovertarget="menu">Open Menu</button>
+
+<div id="menu" popover>
+  <nav>
+    <a href="/settings">Settings</a>
+    <a href="/profile">Profile</a>
+    <a href="/logout">Log out</a>
+  </nav>
+</div>
+```
+
+```css
+[popover] {
+  /* Positioned in top layer automatically */
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-3);
+}
+
+/* Style the backdrop */
+[popover]::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+}
+```
+
+**Key Rule**: Use Popover API for any light-dismiss behavior (dropdown menus, tooltips, popovers) instead of custom click-outside handlers.
+
+### Cascade Layers Preview
+
+Organize CSS priority without fighting specificity. Deep dive in Part 31.
+
+```css
+/* Declare layer order - first declared = lowest priority */
+@layer reset, base, tokens, components, utilities, overrides;
+
+@layer components {
+  .button { background: var(--color-primary); }
+}
+
+@layer utilities {
+  .bg-red { background: red; } /* Wins over .button despite lower specificity */
+}
+```
+
+### Quick Reference
+
+| Feature | Replaces | Use Case |
+|---------|----------|----------|
+| Container queries | Media queries for components | Reusable responsive components |
+| `:has()` | JS class toggling | Parent-aware styling |
+| Subgrid | Manual alignment hacks | Consistent grid children |
+| View Transitions | JS transition libraries | Page/state transitions |
+| Scroll-driven animations | Intersection Observer | Scroll-triggered effects |
+| CSS nesting | Sass/Less nesting | Scoped component styles |
+| Anchor positioning | JS positioning (Popper/Floating UI) | Tooltips, dropdowns |
+| Popover API | Custom modal/dropdown JS | Light-dismiss overlays |
+| `@layer` | Specificity management hacks | Design system CSS ordering |
+
+---
+
+## Part 19: Performance-First Design (Core Web Vitals)
+
+Beautiful design means nothing if it takes 5 seconds to load. Design decisions directly impact performance metrics.
+
+### The Three Metrics
+
+| Metric | Good | Needs Work | Poor | What It Measures |
+|--------|------|------------|------|------------------|
+| LCP (Largest Contentful Paint) | ≤ 2.5s | ≤ 4.0s | > 4.0s | Largest visible element loads |
+| INP (Interaction to Next Paint) | ≤ 200ms | ≤ 500ms | > 500ms | Interactions feel instant |
+| CLS (Cumulative Layout Shift) | ≤ 0.1 | ≤ 0.25 | > 0.25 | Nothing jumps around |
+
+### CLS Prevention Patterns
+
+Layout shift is the most common design-caused performance issue. Prevent it at the design level.
+
+```css
+/* ALWAYS set dimensions on images */
+img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9; /* Browser reserves space before load */
+}
+
+/* Reserve space for dynamic content */
+.embed-container {
+  min-height: 300px;
+  contain: layout;
+}
+
+/* Prevent font swap layout shift */
+@font-face {
+  font-family: 'Display';
+  src: url('/fonts/display.woff2') format('woff2');
+  font-display: swap;
+  /* Match fallback metrics to reduce reflow */
+  size-adjust: 105%;
+  ascent-override: 90%;
+  descent-override: 20%;
+}
+```
+
+**Key Rule**: Every element that loads asynchronously (images, embeds, fonts, lazy content) must have its space reserved before it arrives.
+
+### LCP Optimization
+
+Identify your LCP element (usually a hero image or headline) and prioritize it.
+
+```html
+<!-- Preload LCP image -->
+<link rel="preload" as="image" href="/hero.avif" type="image/avif">
+
+<!-- High priority on LCP image - never lazy-load this -->
+<img src="/hero.avif" alt="Hero" fetchpriority="high" width="1200" height="600">
+
+<!-- Inline critical CSS for above-the-fold content -->
+<style>
+  /* Only styles needed for initial viewport */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 80vh; }
+  .hero-title { font-size: clamp(2rem, 5vw, 4rem); }
+</style>
+
+<!-- Defer non-critical CSS -->
+<link rel="stylesheet" href="/styles.css" media="print" onload="this.media='all'">
+```
+
+### INP Optimization
+
+Keep interactions feeling instant by yielding to the main thread.
+
+```javascript
+/* Break up long tasks */
+async function handleFilterChange(filters) {
+  updateFilterUI(filters);       /* Visual feedback first */
+  await scheduler.yield();        /* Let browser paint */
+  const results = filterData(filters);  /* Heavy computation */
+  await scheduler.yield();
+  renderResults(results);         /* Update DOM */
+}
+```
+
+```css
+/* Use CSS for interactions where possible - no JS overhead */
+details[open] .content {
+  animation: slideDown 0.2s ease-out;
+}
+
+/* CSS-only accordion is faster than JS accordion */
+```
+
+### Skeleton Loaders
+
+Skeletons prevent CLS by reserving exact space for incoming content.
+
+```css
+.skeleton {
+  --skeleton-base: hsl(0 0% 88%);
+  --skeleton-shine: hsl(0 0% 96%);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* Dark mode skeleton */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    --skeleton-base: hsl(0 0% 18%);
+    --skeleton-shine: hsl(0 0% 25%);
+  }
+}
+
+/* Skeleton must match exact dimensions of real content */
+.skeleton-title { height: 28px; width: 60%; }
+.skeleton-text { height: 16px; width: 100%; }
+.skeleton-avatar { height: 48px; width: 48px; border-radius: 50%; }
+```
+
+**Key Rule**: Skeletons must match the exact dimensions of the content they replace. A mismatched skeleton is worse than no skeleton because it causes shift when real content arrives.
+
+### Animation Performance Budget
+
+```css
+/* SAFE to animate (compositor-only, GPU-accelerated) */
+.animate-safe {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* NEVER animate (triggers layout recalculation) */
+/* width, height, margin, padding, top, left, right, bottom,
+   border, box-shadow (with spread changes), font-size */
+
+/* Use will-change sparingly - only for heavy animations */
+.heavy-animation {
+  will-change: transform;
+}
+/* Remove will-change after animation completes */
+
+/* Contain layout-heavy sections */
+.animated-section {
+  contain: layout paint;
+}
+```
+
+### Resource Hints
+
+```html
+<!-- Preload: critical resources for THIS page -->
+<link rel="preload" as="font" href="/fonts/display.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="/hero.avif">
+
+<!-- Preconnect: establish early connections to critical origins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.example.com">
+
+<!-- Prefetch: resources for NEXT likely navigation -->
+<link rel="prefetch" href="/dashboard.js">
+
+<!-- DNS Prefetch: resolve DNS for third-party domains -->
+<link rel="dns-prefetch" href="https://analytics.example.com">
+```
+
+| Hint | When to Use | Impact |
+|------|-------------|--------|
+| `preload` | Critical above-the-fold resources | Reduces LCP |
+| `preconnect` | APIs, font hosts, CDNs | Reduces connection time |
+| `prefetch` | Next page resources | Faster navigation |
+| `dns-prefetch` | Third-party domains | Minor latency reduction |
+| `fetchpriority="high"` | LCP image/resource | Browser prioritization |
+
+### Performance Checklist
+
+- [ ] LCP element identified and has `fetchpriority="high"`
+- [ ] All images have explicit `width`/`height` or `aspect-ratio`
+- [ ] Fonts use `font-display: swap` with `size-adjust` fallback
+- [ ] Skeleton loaders match exact content dimensions
+- [ ] Only `transform`/`opacity` animated (never layout properties)
+- [ ] Critical CSS inlined for above-the-fold content
+- [ ] Resource hints applied for key assets and origins
+
+---
+
+## Part 20: Dark Mode & Theming
+
+Dark mode is not "invert the colors." It requires intentional design decisions about depth, contrast, and color behavior.
+
+### System Preference Detection
+
+```css
+/* CSS-first approach (recommended) */
+:root {
+  color-scheme: light dark; /* Tells browser to style form controls */
+
+  /* Light mode tokens (default) */
+  --color-surface-0: #ffffff;
+  --color-surface-1: #f5f5f5;
+  --color-surface-2: #ebebeb;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-border: #e0e0e0;
+  --color-interactive: hsl(220, 90%, 50%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface-0: #121212;
+    --color-surface-1: #1e1e1e;
+    --color-surface-2: #2a2a2a;
+    --color-text-primary: #e5e5e5;
+    --color-text-secondary: #a0a0a0;
+    --color-border: rgba(255, 255, 255, 0.12);
+    --color-interactive: hsl(220, 70%, 65%);
+  }
+}
+```
+
+### User Override Pattern
+
+Always allow users to override system preference. Use a three-state toggle: System / Light / Dark.
+
+```css
+/* Theme applied via data attribute */
+[data-theme="light"] {
+  --color-surface-0: #ffffff;
+  --color-text-primary: #1a1a1a;
+  /* ... light tokens ... */
+}
+
+[data-theme="dark"] {
+  --color-surface-0: #121212;
+  --color-text-primary: #e5e5e5;
+  /* ... dark tokens ... */
+}
+```
+
+```javascript
+/* Three-state toggle with system fallback */
+function setTheme(preference) {
+  if (preference === 'system') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem('theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', preference);
+    localStorage.setItem('theme', preference);
+  }
+}
+
+/* Restore on page load (run in <head> to prevent flash) */
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+```
+
+**Key Rule**: Always default to system preference. Never force a theme. Run the restore script in `<head>` to prevent a flash of wrong theme (FOWT).
+
+### The light-dark() CSS Function
+
+Concise inline theme switching for simple cases.
+
+```css
+:root {
+  color-scheme: light dark;
+}
+
+.text {
+  color: light-dark(#1a1a1a, #e5e5e5);
+}
+
+.surface {
+  background: light-dark(#ffffff, #121212);
+}
+
+.border {
+  border-color: light-dark(#e0e0e0, rgba(255, 255, 255, 0.12));
+}
+```
+
+Use `light-dark()` for simple one-off values. Use custom properties for values referenced in multiple places.
+
+### Color Adjustments for Dark Mode
+
+Colors that look great on light backgrounds often look harsh on dark backgrounds.
+
+```css
+:root {
+  /* Light mode: high saturation, lower lightness */
+  --color-primary: hsl(220, 90%, 50%);
+  --color-success: hsl(145, 80%, 38%);
+  --color-error: hsl(0, 85%, 50%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode: reduce saturation ~20%, increase lightness */
+    --color-primary: hsl(220, 70%, 65%);
+    --color-success: hsl(145, 60%, 55%);
+    --color-error: hsl(0, 65%, 60%);
+  }
+}
+
+/* Text: never use pure white on dark. Use off-white. */
+/* #e5e5e5 or rgba(255, 255, 255, 0.87) reduces eye strain */
+```
+
+**Key Rule**: Desaturate colors ~20% and increase lightness for dark mode. Pure white text on pure black is harder to read than off-white on dark gray.
+
+### Depth Without Shadows
+
+Shadows are nearly invisible on dark backgrounds. Use surface elevation instead.
+
+```css
+/* Dark mode depth = lighter surfaces at higher elevation */
+:root {
+  --surface-0: #121212; /* Base/background */
+  --surface-1: #1e1e1e; /* Cards, bottom sheets */
+  --surface-2: #232323; /* Raised cards, app bars */
+  --surface-3: #292929; /* Modals, dropdowns */
+  --surface-4: #333333; /* Tooltips, popovers */
+}
+
+/* Subtle borders for edge definition */
+.card {
+  background: var(--surface-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal {
+  background: var(--surface-3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Light mode still uses shadows normally */
+@media (prefers-color-scheme: light) {
+  .card { box-shadow: var(--elevation-1); border: none; }
+  .modal { box-shadow: var(--elevation-4); border: none; }
+}
+```
+
+### Multi-Theme Token Architecture
+
+Support more than just light/dark. High-contrast and brand themes use the same token system.
+
+| Token | Light | Dark | High Contrast |
+|-------|-------|------|---------------|
+| `--surface-0` | `#ffffff` | `#121212` | `#000000` |
+| `--text-primary` | `#1a1a1a` | `#e5e5e5` | `#ffffff` |
+| `--border` | `#e0e0e0` | `rgba(255,255,255,0.12)` | `#ffffff` |
+| `--interactive` | `hsl(220,90%,50%)` | `hsl(220,70%,65%)` | `hsl(220,100%,70%)` |
+
+```css
+/* Windows High Contrast Mode */
+@media (forced-colors: active) {
+  .button {
+    border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .button:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* forced-colors uses system keywords, not custom values */
+}
+```
+
+Cross-reference: Part 30 (Design Token Architecture) for the full three-tier token system.
+
+### Image & Media in Dark Mode
+
+```css
+/* Reduce image brightness in dark mode to prevent glare */
+@media (prefers-color-scheme: dark) {
+  img:not([src$=".svg"]) {
+    filter: brightness(0.85);
+  }
+
+  /* SVG icons using currentColor adapt automatically */
+  .icon { color: var(--text-primary); }
+}
+```
+
+```html
+<!-- Serve different images per theme -->
+<picture>
+  <source srcset="/hero-dark.avif" media="(prefers-color-scheme: dark)">
+  <img src="/hero-light.avif" alt="Hero illustration">
+</picture>
+```
+
+### Dark Mode Anti-Patterns
+
+| Anti-Pattern | Problem | Fix |
+|-------------|---------|-----|
+| Pure black (`#000`) backgrounds | Harsh contrast, eye strain | Use `#121212` or similar dark gray |
+| Saturated colors on dark | Optical vibration, fatigue | Desaturate ~20%, increase lightness |
+| Inverted shadows | Shadows invisible on dark | Use surface elevation (lighter = higher) |
+| Forgetting scrollbar | System scrollbar clashes | `color-scheme: dark` or custom scrollbar CSS |
+| Forgetting form defaults | Native inputs stay light | `color-scheme: dark` on `:root` |
+| Flash of wrong theme | Theme loads after paint | Run theme script in `<head>` |
+
+---
+
+## Part 21: AI-Era Design Patterns
+
+AI interfaces break traditional UI conventions: response times are unpredictable, outputs vary in length and quality, and confidence is uncertain. These patterns address the unique UX challenges of AI-powered products.
+
+### Streaming UI
+
+Chat and generative interfaces must handle token-by-token output gracefully.
+
+```css
+/* Streaming text with typing cursor */
+.message.streaming {
+  /* Content appended via JavaScript */
+}
+
+.message.streaming::after {
+  content: '|';
+  color: var(--color-interactive);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Auto-scroll container */
+.chat-messages {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+```
+
+```javascript
+/* Smart auto-scroll: only scroll if user is at bottom */
+function shouldAutoScroll(container) {
+  const threshold = 100;
+  const distanceFromBottom =
+    container.scrollHeight - container.scrollTop - container.clientHeight;
+  return distanceFromBottom < threshold;
+}
+
+/* Pause auto-scroll when user scrolls up to read history */
+```
+
+**Key Rule**: Always auto-scroll during streaming if the user is at the bottom. Stop auto-scrolling if they've scrolled up to read history. Show a "scroll to bottom" button when they're not at the latest message.
+
+### AI Loading States
+
+AI loading is different from traditional loading: duration is unpredictable and can range from 1 second to 2 minutes.
+
+```css
+/* Phase-based loading indicator */
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.ai-loading .dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-interactive);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.ai-loading .dots span:nth-child(2) { animation-delay: 0.2s; }
+.ai-loading .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+/* Show elapsed time after 3 seconds */
+.ai-loading .elapsed {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards 3s;
+}
+```
+
+```html
+<div class="ai-loading">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <span class="phase">Analyzing your request...</span>
+  <span class="elapsed">12s</span>
+  <button class="cancel" aria-label="Cancel generation">Stop</button>
+</div>
+```
+
+**Key Rule**: Skeleton loaders are wrong for AI content because the structure is unknown. Use animated indicators with phase text. Always show a cancel button. Show elapsed time after 3+ seconds.
+
+### Confidence Indicators
+
+When AI certainty varies, make it visible. Users trust AI more when it admits what it doesn't know.
+
+```css
+/* Confidence badge */
+.confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.confidence--high {
+  background: hsl(145, 60%, 90%);
+  color: hsl(145, 80%, 25%);
+}
+
+.confidence--medium {
+  background: hsl(40, 80%, 90%);
+  color: hsl(40, 90%, 25%);
+}
+
+.confidence--low {
+  background: hsl(0, 60%, 92%);
+  color: hsl(0, 70%, 30%);
+}
+```
+
+```html
+<!-- Source attribution inline -->
+<p>
+  The population of Tokyo is approximately 14 million.
+  <a href="#source-1" class="source-ref" aria-label="Source 1">[1]</a>
+</p>
+```
+
+### Explainability & Transparency UX
+
+```html
+<!-- Expandable reasoning panel -->
+<div class="ai-response">
+  <div class="response-content">...</div>
+  <details class="reasoning">
+    <summary>How AI reached this conclusion</summary>
+    <ol class="reasoning-steps">
+      <li>Analyzed 3 data sources for population statistics</li>
+      <li>Cross-referenced with 2023 census data</li>
+      <li>Applied seasonal adjustment factor</li>
+    </ol>
+  </details>
+</div>
+```
+
+```css
+.reasoning {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-1);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.reasoning summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.reasoning summary:hover {
+  color: var(--text-primary);
+}
+```
+
+### Human-in-the-Loop Controls
+
+AI output should be editable, not read-only. Users need to correct, refine, and direct.
+
+```css
+/* Action bar for AI responses */
+.response-actions {
+  display: flex;
+  gap: 4px;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-3);
+}
+
+.response-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.response-actions button:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+```
+
+```html
+<div class="response-actions">
+  <button aria-label="Copy response"><svg>...</svg> Copy</button>
+  <button aria-label="Edit response"><svg>...</svg> Edit</button>
+  <button aria-label="Regenerate response"><svg>...</svg> Regenerate</button>
+  <button aria-label="Report issue"><svg>...</svg> Report</button>
+  <div class="feedback" role="group" aria-label="Rate response">
+    <button aria-label="Good response"><svg>...</svg></button>
+    <button aria-label="Bad response"><svg>...</svg></button>
+  </div>
+</div>
+```
+
+### Error Handling for AI
+
+AI failures need different patterns than traditional errors because users need manual fallback paths.
+
+```html
+<div class="ai-error" role="alert">
+  <div class="error-icon"><!-- warning icon --></div>
+  <div class="error-content">
+    <p class="error-title">AI couldn't complete this request</p>
+    <p class="error-detail">The model is temporarily overloaded. Your input has been saved.</p>
+  </div>
+  <div class="error-actions">
+    <button class="retry">Try again</button>
+    <button class="manual-fallback">Do it manually</button>
+  </div>
+</div>
+```
+
+Design principles for AI errors:
+- **Explain what happened** in plain language (not error codes)
+- **Preserve user input** so they don't have to re-type
+- **Offer retry** with a single click
+- **Provide manual fallback** so the user isn't stuck
+- **Show partial results** if the AI got partway through
+
+### User Control Over AI
+
+```html
+<!-- Settings that respect user agency -->
+<div class="ai-settings">
+  <label>
+    Response length
+    <select>
+      <option>Concise</option>
+      <option>Balanced</option>
+      <option>Detailed</option>
+    </select>
+  </label>
+
+  <label>
+    <input type="checkbox" checked>
+    Show confidence indicators
+  </label>
+
+  <label>
+    <input type="checkbox" checked>
+    Show reasoning steps
+  </label>
+
+  <button class="clear-context">Clear conversation history</button>
+</div>
+```
+
+**Key Rule**: User control > perceived AI capability. Explicit controls and predictability matter more than hidden automation. Always let users stop, undo, regenerate, and edit AI output.
+
+### AI Interface Quick Reference
+
+| Pattern | Use When | Anti-Pattern |
+|---------|----------|--------------|
+| Streaming with cursor | Real-time text generation | Waiting for full response then dumping it |
+| Phase-based loading | AI processing > 1 second | Generic spinner with no context |
+| Confidence indicators | Output certainty varies | Presenting everything with equal authority |
+| Expandable reasoning | Complex multi-step AI decisions | Black-box output with no explanation |
+| Response action bar | Users need to act on AI output | Read-only AI responses |
+| Manual fallback | AI unavailable or fails | Dead-end error states |
+
+---
+
+## Part 22: Advanced Interaction Design
+
+Good interaction design makes an interface feel alive and responsive. Every component has multiple states, and transitions between them matter as much as the states themselves.
+
+### Micro-Interaction Taxonomy
+
+Micro-interactions follow a four-part structure: Trigger → Rules → Feedback → Loops/Modes.
+
+```css
+/* Button with multi-state feedback */
+.button {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Hover: anticipation */
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-2);
+}
+
+/* Active: confirmation */
+.button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+/* Loading: system status */
+.button[aria-busy="true"] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.button[aria-busy="true"]::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-left: 8px;
+}
+
+/* Success: completion feedback */
+.button.success {
+  background: var(--color-success);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+```
+
+**Key Rule**: Every interactive element needs at least four visual states: default, hover, active/pressed, and disabled. Important actions also need loading and success/error states.
+
+### Gesture Design
+
+Design for touch interfaces with gesture alternatives for keyboard/mouse users.
+
+| Gesture | Common Use | Non-Gesture Alternative |
+|---------|-----------|------------------------|
+| Swipe horizontal | Dismiss, navigate | Delete button, back/forward buttons |
+| Swipe vertical | Pull-to-refresh, reveal | Refresh button, scroll to load |
+| Long-press | Context menu, selection | Right-click, checkbox selection |
+| Pinch | Zoom | Zoom buttons, slider |
+| Double-tap | Quick action, zoom | Button, toggle |
+
+**Key Rule**: Every gesture must have a visible, tappable alternative. Gestures are shortcuts, not the only path. Include onboarding hints for discoverable gestures.
+
+### Progressive Disclosure
+
+Show only essential options first. Reveal complexity on demand.
+
+```html
+<!-- Zero-JS progressive disclosure with details/summary -->
+<details>
+  <summary>Advanced settings</summary>
+  <div class="advanced-options">
+    <!-- Complex options hidden until requested -->
+  </div>
+</details>
+```
+
+```css
+details .advanced-options {
+  padding-top: var(--space-3);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+summary {
+  cursor: pointer;
+  color: var(--color-interactive);
+  font-weight: 500;
+  list-style: none;
+}
+
+summary::before {
+  content: '+ ';
+}
+
+details[open] summary::before {
+  content: '− ';
+}
+```
+
+### State-Based Design
+
+Every component exists in multiple states. Design all of them intentionally.
+
+| State | Design Treatment | Example |
+|-------|-----------------|---------|
+| Empty | Illustration + CTA + explanation | "No messages yet. Start a conversation." |
+| Loading | Skeleton matching content dimensions | Shimmer placeholders |
+| Partial | Show what's available + loading indicator | 3 of 10 items loaded |
+| Complete | Full content with actions | List with items |
+| Error | Explain problem + retry action + manual fallback | "Couldn't load. Retry / Go to settings" |
+| Offline | Cached content + offline indicator | "You're offline. Showing saved data." |
+
+```css
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-state .illustration {
+  width: 200px;
+  height: 200px;
+  margin-bottom: var(--space-4);
+  opacity: 0.6;
+}
+
+.empty-state .title {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state .cta {
+  margin-top: var(--space-4);
+}
+```
+
+**Key Rule**: Empty states and error states are design opportunities, not afterthoughts. A well-designed empty state guides users toward their first action.
+
+### State Transitions
+
+Animate between states to help users understand what changed.
+
+```css
+/* Smooth transition from loading to populated */
+.content-area {
+  transition: opacity 0.3s ease;
+}
+
+.content-area[data-state="loading"] {
+  opacity: 0.6;
+}
+
+.content-area[data-state="complete"] {
+  opacity: 1;
+}
+
+/* List items enter with stagger */
+.list-item {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: enterItem 0.3s ease forwards;
+}
+
+.list-item:nth-child(1) { animation-delay: 0ms; }
+.list-item:nth-child(2) { animation-delay: 50ms; }
+.list-item:nth-child(3) { animation-delay: 100ms; }
+.list-item:nth-child(4) { animation-delay: 150ms; }
+/* Cap at ~5 staggered items to avoid slow-feeling loads */
+
+@keyframes enterItem {
+  to { opacity: 1; transform: translateY(0); }
+}
+```
+
+### Scroll-Based Storytelling
+
+Use scroll position to drive narrative through content sections.
+
+```css
+/* Sticky context retention */
+.story-section {
+  position: relative;
+  min-height: 100vh;
+}
+
+.story-section .sticky-context {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-section .scroll-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Parallax done right: subtle, single-axis, respects user preference */
+@media (prefers-reduced-motion: no-preference) {
+  .parallax-element {
+    animation: parallax linear;
+    animation-timeline: scroll();
+  }
+
+  @keyframes parallax {
+    from { transform: translateY(-20px); }
+    to { transform: translateY(20px); }
+  }
+}
+```
+
+Cross-reference: Part 18 (Modern CSS) for scroll-driven animation syntax. Part 8 (Motion) for performance rules.
+
+---
+
+## Part 23: Data Visualization & Dashboard Design
+
+Data-heavy interfaces require different design principles than marketing pages. Prioritize clarity, information density, and accurate representation.
+
+### Tufte's Core Principles
+
+Edward Tufte's foundational rules for honest, effective data graphics:
+
+1. **Maximize data-ink ratio**: every pixel of ink should present data or aid comprehension of data. If a visual element doesn't encode data, remove it.
+2. **Eliminate chart junk**: decorative gridlines, 3D effects, excessive legends, gradient fills, and ornamental elements that don't serve the data.
+3. **Small multiples**: repeat the same chart type with different data slices for easy comparison. Faster to read than one complex chart.
+4. **Graphical integrity**: represent quantities honestly. No truncated axes, no 3D distortion, no area tricks.
+
+**Key Rule**: "If a visual element doesn't encode data, remove it." This applies to gridlines, backgrounds, borders, and decorative elements on charts.
+
+### Information Density
+
+```css
+/* Sparkline: word-sized data graphic inline with text */
+.sparkline {
+  display: inline-block;
+  width: 60px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* High-density table: condensed for scanning */
+.data-table--dense th,
+.data-table--dense td {
+  padding: 4px 8px;
+  font-size: var(--text-sm);
+}
+
+/* Monospace numbers for column alignment */
+.data-table td.numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+```
+
+### Dashboard Layout Patterns
+
+```css
+/* KPI bar: key metrics at top */
+.kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.kpi-card {
+  padding: var(--space-3);
+  background: var(--surface-1);
+  border-radius: var(--radius-md);
+}
+
+.kpi-card .label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.kpi-card .value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card .trend {
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}
+
+.kpi-card .trend--up { color: var(--color-success); }
+.kpi-card .trend--down { color: var(--color-error); }
+
+/* Grid dashboard with priority-based sizing */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(200px, auto);
+  gap: var(--space-3);
+}
+
+.widget--primary { grid-column: span 8; grid-row: span 2; }
+.widget--secondary { grid-column: span 4; }
+.widget--full { grid-column: span 12; }
+
+/* Mobile: single column, priority ordering */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .widget--primary,
+  .widget--secondary,
+  .widget--full {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+```
+
+### Chart Accessibility
+
+```html
+<!-- Accessible chart container -->
+<figure role="img" aria-label="Monthly revenue for 2025, showing growth from $2M in January to $3.4M in December">
+  <div class="chart-container">
+    <!-- Chart rendered here (SVG, Canvas, etc.) -->
+  </div>
+  <figcaption>Monthly Revenue 2025</figcaption>
+</figure>
+
+<!-- Provide data table fallback for screen readers -->
+<details class="sr-data-table">
+  <summary class="visually-hidden">View data as table</summary>
+  <table>
+    <caption>Monthly Revenue 2025</caption>
+    <thead><tr><th>Month</th><th>Revenue</th></tr></thead>
+    <tbody>
+      <tr><td>January</td><td>$2,000,000</td></tr>
+      <!-- ... -->
+    </tbody>
+  </table>
+</details>
+```
+
+- Don't rely on color alone to distinguish data series: add patterns, labels, or distinct shapes
+- Ensure keyboard navigable data points for interactive charts
+- Provide `aria-label` or linked description for every chart
+
+### Real-Time Data Display
+
+```css
+/* Animated counter for live metrics */
+.live-metric {
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
+}
+
+/* Flash on value change */
+.live-metric.updated {
+  animation: valueFlash 0.6s ease;
+}
+
+@keyframes valueFlash {
+  0% { background: var(--color-interactive-subtle); }
+  100% { background: transparent; }
+}
+
+/* Stale data indicator */
+.data-timestamp {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.data-timestamp.stale {
+  color: var(--color-warning);
+}
+
+.data-timestamp.stale::before {
+  content: '⚠ ';
+}
+```
+
+**Key Rule**: Batch real-time updates to prevent visual noise. Update at most every 1-2 seconds for numbers, 5-10 seconds for charts. Always show the timestamp of the last update.
+
+### Table Design
+
+```css
+/* Well-structured data table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface-0);
+}
+
+.data-table th {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Sortable column indicator */
+.data-table th[aria-sort] {
+  cursor: pointer;
+}
+
+.data-table th[aria-sort="ascending"]::after {
+  content: ' ↑';
+}
+
+.data-table th[aria-sort="descending"]::after {
+  content: ' ↓';
+}
+
+.data-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+/* Subtle zebra striping */
+.data-table tbody tr:nth-child(even) {
+  background: var(--surface-1);
+}
+
+/* Row hover */
+.data-table tbody tr:hover {
+  background: var(--color-interactive-subtle);
+}
+
+/* Sticky first column for wide tables */
+@media (max-width: 768px) {
+  .data-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table th:first-child,
+  .data-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--surface-0);
+    z-index: 1;
+  }
+}
+```
+
+Use pagination for data tables (not infinite scroll). Virtual scrolling only for datasets > 1,000 rows.
+
+### Color in Data Visualization
+
+| Palette Type | Use Case | Example |
+|-------------|----------|---------|
+| Sequential | Continuous data (0-100) | Light blue → dark blue |
+| Diverging | Positive/negative around center | Red ← neutral → green |
+| Categorical | Distinct groups (max 8-10) | Distinct hues per category |
+
+Always test charts with colorblind simulators (deuteranopia, protanopia, tritanopia). Cross-reference: Color Palette skill for generation tools.
+
+---
+
+## Part 24: Fluid & Responsive Typography
+
+Stop using breakpoints for font sizes. Use fluid typography that scales smoothly between any viewport width.
+
+### CSS clamp() for Fluid Type
+
+```css
+/* Syntax: clamp(minimum, preferred, maximum) */
+/* preferred uses viewport units for smooth scaling */
+
+:root {
+  --text-xs: clamp(0.625rem, 0.55rem + 0.3vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.65rem + 0.4vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
+  --text-lg: clamp(1rem, 0.8rem + 0.8vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 0.9rem + 1.4vw, 1.75rem);
+  --text-2xl: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+  --text-3xl: clamp(1.875rem, 1rem + 3.5vw, 3rem);
+  --text-4xl: clamp(2.25rem, 1rem + 5vw, 4rem);
+}
+
+/* Apply semantically */
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+body { font-size: var(--text-base); }
+.caption { font-size: var(--text-sm); }
+```
+
+**Key Rule**: Set `min` for mobile readability, `max` for desktop restraint, `preferred` for smooth scaling. Use https://utopia.fyi/ to generate fluid scales.
+
+### Variable Fonts
+
+One font file, infinite weights and widths. Better performance and design flexibility.
+
+```css
+@font-face {
+  font-family: 'Display';
+  src: url('/fonts/display-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Fine-tuned weight hierarchy */
+.heading { font-weight: 720; }
+.subheading { font-weight: 580; }
+.body { font-weight: 400; }
+.caption { font-weight: 350; }
+
+/* Animate weight on interaction */
+.nav-link {
+  font-weight: 400;
+  transition: font-weight 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link[aria-current="page"] {
+  font-weight: 650;
+}
+
+/* Responsive weight: bolder on large screens, lighter on small */
+h1 {
+  font-weight: clamp(600, 500 + 2vw, 800);
+}
+```
+
+Performance benefit: one variable font file replaces multiple static font files, significantly improving LCP. Cross-reference: Part 19 (Performance) for font loading.
+
+### Line-Length Optimization
+
+Optimal line length for readability: 45-75 characters per line. 66 characters is ideal.
+
+```css
+/* Constrain content width with ch units */
+.prose {
+  max-width: 65ch;
+  margin-inline: auto;
+}
+
+/* Responsive: shorter lines on mobile */
+@media (max-width: 768px) {
+  .prose {
+    max-width: 55ch;
+  }
+}
+
+/* Wide layout with constrained text */
+.section {
+  width: 100%;
+  padding: var(--space-8) var(--space-4);
+}
+
+.section .content {
+  max-width: 65ch;
+  margin-inline: auto;
+}
+```
+
+### OpenType Features
+
+Unlock typographic refinement built into quality fonts.
+
+```css
+/* Tabular numbers for aligned data columns */
+.data-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Oldstyle numbers for body text (more readable inline) */
+.prose {
+  font-variant-numeric: oldstyle-nums;
+}
+
+/* Fractions */
+.recipe-amount {
+  font-variant-numeric: diagonal-fractions;
+}
+
+/* Small caps for labels and abbreviations */
+.abbreviation {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+}
+
+/* Ligatures for refined body text */
+.prose {
+  font-variant-ligatures: common-ligatures contextual;
+}
+```
+
+Cross-reference: Part 23 (Data Viz) for tabular numbers in tables.
+
+### Text Rendering & Wrapping
+
+```css
+/* Optimize legibility for headings (enables kerning + ligatures) */
+h1, h2, h3 {
+  text-rendering: optimizeLegibility;
+}
+
+/* Balanced headings: prevent orphans */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Pretty body text: avoid single-word last lines */
+p {
+  text-wrap: pretty;
+}
+
+/* Font smoothing: use judiciously, test on both light and dark */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+```
+
+---
+
+## Part 25: Responsive Image Strategies
+
+Images are typically the largest assets on a page and the most common LCP element. Get them right for both aesthetics and performance.
+
+### Format Hierarchy
+
+```
+AVIF (best compression) → WebP (wide support) → JPEG (fallback)
+SVG for icons, logos, illustrations
+PNG only for transparency where AVIF/WebP unavailable
+```
+
+```html
+<!-- Format fallback chain -->
+<picture>
+  <source srcset="/hero.avif" type="image/avif">
+  <source srcset="/hero.webp" type="image/webp">
+  <img src="/hero.jpg" alt="Hero image" width="1200" height="600">
+</picture>
+```
+
+### Art Direction with picture
+
+Serve different crops for different viewports. Not just different sizes -- different compositions.
+
+```html
+<!-- Portrait crop on mobile, landscape on desktop -->
+<picture>
+  <source
+    srcset="/hero-portrait.avif"
+    media="(max-width: 768px)"
+    type="image/avif"
+    width="600" height="800">
+  <source
+    srcset="/hero-landscape.avif"
+    media="(min-width: 769px)"
+    type="image/avif"
+    width="1200" height="600">
+  <img src="/hero-landscape.jpg" alt="Product hero" width="1200" height="600">
+</picture>
+```
+
+Use `<picture>` when the image composition changes per viewport (art direction). Use `srcset` when the same image is just served at different resolutions.
+
+### srcset and sizes
+
+```html
+<!-- Resolution switching: same image, different sizes -->
+<img
+  srcset="
+    /product-400.avif 400w,
+    /product-800.avif 800w,
+    /product-1200.avif 1200w,
+    /product-1600.avif 1600w"
+  sizes="
+    (max-width: 768px) 100vw,
+    (max-width: 1200px) 50vw,
+    33vw"
+  src="/product-800.jpg"
+  alt="Product photo"
+  width="800"
+  height="600"
+  loading="lazy">
+```
+
+**Key Rule**: Always include `sizes`. Without it, the browser assumes the image is 100vw and downloads the largest version. The `sizes` attribute tells the browser how wide the image will actually be rendered.
+
+### Lazy Loading
+
+```html
+<!-- LCP image: eager load, high priority -->
+<img src="/hero.avif" alt="Hero" fetchpriority="high" decoding="async"
+     width="1200" height="600">
+
+<!-- Below-the-fold images: lazy load -->
+<img src="/feature.avif" alt="Feature" loading="lazy" decoding="async"
+     width="800" height="600">
+```
+
+**Key Rule**: Never lazy-load the LCP image. Use `fetchpriority="high"` on the LCP image and `loading="lazy"` on everything below the fold. Cross-reference: Part 19 (Performance) for LCP optimization.
+
+### aspect-ratio CSS Property
+
+Prevent CLS by reserving space before images load. Replaces the old padding-bottom hack.
+
+```css
+/* Fixed aspect ratio container */
+.image-container {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive video embed */
+.video-embed {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+}
+
+.video-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+```
+
+### object-fit / object-position
+
+Create uniform image grids despite varied source dimensions.
+
+```css
+/* Uniform card images */
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  object-position: center top; /* Focus on faces/content */
+}
+
+/* Avatar: always square, always centered */
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Contain for logos (show full logo, no cropping) */
+.partner-logo {
+  width: 120px;
+  height: 60px;
+  object-fit: contain;
+}
+```
+
+---
+
+## Part 26: Component Architecture Patterns
+
+Structure components for reuse, composition, and maintainability. Design systems need architectural patterns, not just visual tokens.
+
+### Headless UI Pattern
+
+Separate behavior from presentation. Build logic once, style infinitely.
+
+```jsx
+/* Headless hook: manages dropdown behavior */
+function useDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
+
+  /* Keyboard navigation, focus management, outside click */
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e) => { if (e.key === 'Escape') setIsOpen(false); };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
+  return {
+    isOpen,
+    toggle: () => setIsOpen(!isOpen),
+    close: () => setIsOpen(false),
+    triggerProps: { ref: triggerRef, onClick: () => setIsOpen(!isOpen), 'aria-expanded': isOpen },
+    menuProps: { ref: menuRef, role: 'menu', hidden: !isOpen },
+  };
+}
+
+/* Styled implementation: your design system's look */
+function StyledDropdown({ items }) {
+  const { isOpen, triggerProps, menuProps, close } = useDropdown();
+  return (
+    <div className="dropdown">
+      <button className="dropdown-trigger" {...triggerProps}>Options</button>
+      <ul className="dropdown-menu" {...menuProps}>
+        {items.map(item => (
+          <li key={item.id} role="menuitem">
+            <button onClick={() => { item.action(); close(); }}>{item.label}</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+**Key Rule**: Build behavior once, style infinitely. Headless components handle accessibility (keyboard nav, focus management, ARIA) so every styled implementation gets it for free.
+
+### Compound Components
+
+Components that work together with shared implicit state.
+
+```jsx
+/* Tab component API: compound structure */
+<Tabs defaultTab="overview">
+  <TabList>
+    <Tab id="overview">Overview</Tab>
+    <Tab id="features">Features</Tab>
+    <Tab id="pricing">Pricing</Tab>
+  </TabList>
+  <TabPanel id="overview">...</TabPanel>
+  <TabPanel id="features">...</TabPanel>
+  <TabPanel id="pricing">...</TabPanel>
+</Tabs>
+```
+
+Use compound components when: multiple sub-elements share state, the structure is stable, and customization is at the content level (not the structural level).
+
+### CSS Cascade Layers for Components
+
+```css
+/* Component library in its own layer */
+@layer components {
+  .button {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+  }
+
+  .card {
+    padding: var(--space-4);
+    background: var(--surface-1);
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* Consumer overrides always win without specificity battles */
+@layer overrides {
+  .button.custom-cta {
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+}
+```
+
+Cross-reference: Part 31 (CSS Cascade Layers) for full layer architecture.
+
+### Design Token Inheritance
+
+Components inherit tokens from their context through CSS custom property scoping.
+
+```css
+/* Base component tokens */
+.card {
+  --card-padding: var(--space-4);
+  --card-bg: var(--surface-1);
+  padding: var(--card-padding);
+  background: var(--card-bg);
+}
+
+/* Context-scoped overrides */
+.hero .card {
+  --card-padding: var(--space-6);
+  --card-bg: var(--surface-2);
+}
+
+.sidebar .card {
+  --card-padding: var(--space-3);
+}
+
+/* Component respects context without knowing about it */
+```
+
+Cross-reference: Part 30 (Design Token Architecture) for the full three-tier system.
+
+### Component API Principles
+
+| Principle | Good API | Bad API |
+|-----------|----------|---------|
+| Composition over configuration | `<Card><CardHeader/><CardBody/></Card>` | `<Card title="..." body="..." headerIcon="...">`|
+| Sensible defaults | `<Button>Label</Button>` renders primary | Every prop required |
+| Consistent naming | `variant`, `size` across all components | `type`, `kind`, `style`, `mode` mixed |
+| Accessibility built-in | ARIA roles auto-applied | Requires manual aria props |
+| Style escape hatches | `className` or `style` prop available | No way to customize |
+
+---
+
+## Part 27: Advanced Form Design
+
+Forms are where design meets user patience. Every friction point costs conversions.
+
+### Error State Best Practices
+
+```css
+/* Inline error: validate on blur, not on every keystroke */
+.form-group.has-error .input {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(var(--color-error-rgb), 0.15);
+}
+
+.form-group .error-message {
+  display: none;
+  font-size: var(--text-sm);
+  color: var(--color-error);
+  margin-top: var(--space-1);
+}
+
+.form-group.has-error .error-message {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Use :user-invalid for CSS-only validation styling */
+/* Only shows error AFTER user has interacted with the field */
+input:user-invalid {
+  border-color: var(--color-error);
+}
+
+input:user-invalid + .error-message {
+  display: block;
+}
+
+input:user-valid {
+  border-color: var(--color-success);
+}
+```
+
+```html
+<!-- Error associated with input via aria-describedby -->
+<div class="form-group">
+  <label for="email">Email</label>
+  <input id="email" type="email" required
+         aria-describedby="email-error" aria-invalid="true">
+  <p id="email-error" class="error-message" role="alert">
+    <svg aria-hidden="true"><!-- error icon --></svg>
+    Please enter a valid email (e.g., name@company.com)
+  </p>
+</div>
+```
+
+**Key Rule**: Error messages must be specific ("Password must include a number") not generic ("Invalid password"). Show errors on blur, not on every keystroke. Never show errors before the user has interacted with a field.
+
+### Progressive Enhancement
+
+Start with native HTML validation. Layer JavaScript on top for better UX.
+
+```html
+<!-- HTML-first: works without JavaScript -->
+<form method="POST" action="/submit">
+  <input type="email" required autocomplete="email"
+         pattern="[^@]+@[^@]+\.[^@]+" minlength="5">
+  <input type="password" required minlength="8"
+         autocomplete="new-password">
+  <button type="submit">Sign up</button>
+</form>
+```
+
+```javascript
+/* JavaScript enhances the form, doesn't replace native validation */
+const form = document.querySelector('form');
+
+/* Only add novalidate when JS is available */
+form.setAttribute('novalidate', '');
+
+form.addEventListener('submit', (e) => {
+  /* Custom validation UX with better error messages */
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    showCustomErrors(form);
+  }
+});
+```
+
+### Form Accessibility Deep-Dive
+
+```html
+<!-- Group related inputs with fieldset and legend -->
+<fieldset>
+  <legend>Shipping address</legend>
+
+  <div class="form-group">
+    <label for="street">Street address</label>
+    <input id="street" type="text" autocomplete="street-address" required>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="city">City</label>
+      <input id="city" type="text" autocomplete="address-level2" required>
+    </div>
+    <div class="form-group">
+      <label for="zip">ZIP code</label>
+      <input id="zip" type="text" autocomplete="postal-code"
+             inputmode="numeric" pattern="[0-9]*" required>
+    </div>
+  </div>
+</fieldset>
+
+<!-- Required field indicator -->
+<label for="name">
+  Full name <span class="required" aria-label="required">*</span>
+</label>
+```
+
+Key attributes:
+- `autocomplete`: helps browsers and password managers fill fields correctly
+- `inputmode="numeric"`: shows number keyboard on mobile for non-number inputs (ZIP, credit card)
+- `aria-describedby`: links error messages and help text to inputs
+- `aria-invalid`: announces error state to screen readers
+
+### Multi-Step Form Patterns
+
+```css
+/* Step indicator */
+.step-indicator {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.step.active {
+  color: var(--color-interactive);
+  font-weight: 600;
+}
+
+.step.completed {
+  color: var(--color-success);
+}
+
+.step .number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.step.completed .number::after {
+  content: '✓';
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+}
+
+.step-connector.completed {
+  background: var(--color-success);
+}
+```
+
+Form principles:
+- Validate each step before allowing advancement
+- Preserve data on back navigation (never lose user input)
+- Show a summary/review step before final submission
+- Single-column forms convert better than multi-column
+- Labels above inputs (not beside) for mobile and faster scanning
+
+Cross-reference: Part 3 (Form Element Consistency) for styling rules.
+
+---
+
+## Part 28: Internationalization & RTL Design
+
+If your interface will ever be translated, build for it from day one. Retrofitting RTL and text expansion is painful.
+
+### Logical CSS Properties
+
+Replace physical properties (left/right/top/bottom) with logical ones. They automatically adapt to writing direction.
+
+```css
+/* WRONG - Only works for LTR */
+.sidebar {
+  margin-left: 16px;
+  padding-right: 24px;
+  border-left: 2px solid var(--border);
+  text-align: left;
+}
+
+/* CORRECT - Works for both LTR and RTL */
+.sidebar {
+  margin-inline-start: 16px;
+  padding-inline-end: 24px;
+  border-inline-start: 2px solid var(--border);
+  text-align: start;
+}
+```
+
+| Physical Property | Logical Property |
+|-------------------|------------------|
+| `margin-left` | `margin-inline-start` |
+| `margin-right` | `margin-inline-end` |
+| `margin-top` | `margin-block-start` |
+| `margin-bottom` | `margin-block-end` |
+| `padding-left` | `padding-inline-start` |
+| `padding-right` | `padding-inline-end` |
+| `border-left` | `border-inline-start` |
+| `text-align: left` | `text-align: start` |
+| `float: left` | `float: inline-start` |
+| `width` | `inline-size` |
+| `height` | `block-size` |
+
+**Key Rule**: Every new CSS you write should use logical properties. There is no downside -- they work identically to physical properties in LTR and automatically adapt for RTL.
+
+### RTL Design Considerations
+
+```css
+/* Set direction on root */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Icons that need mirroring (directional meaning) */
+html[dir="rtl"] .icon-arrow-forward,
+html[dir="rtl"] .icon-chevron-right,
+html[dir="rtl"] .icon-reply {
+  transform: scaleX(-1);
+}
+
+/* Icons that DON'T mirror (universal meaning) */
+/* checkmarks, close/X, search, download, play, pause */
+
+/* Bidirectional text isolation */
+.mixed-direction-text {
+  unicode-bidi: isolate;
+}
+```
+
+### Text Expansion & Contraction
+
+Design for variable text lengths. Never hardcode widths on text containers.
+
+| Language | Typical Change from English |
+|----------|----------------------------|
+| German | +30% longer |
+| French | +20% longer |
+| Finnish | +30-40% longer |
+| Chinese | -50% shorter |
+| Japanese | -40% shorter |
+| Korean | -30% shorter |
+| Arabic | +25% longer |
+
+```css
+/* Flexible button: accommodates translation expansion */
+.button {
+  padding-inline: var(--space-4);
+  white-space: nowrap;
+  min-inline-size: 0; /* Don't force minimum width */
+  /* Let text determine width */
+}
+
+/* Truncation safety for constrained areas */
+.nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-inline-size: 160px;
+}
+```
+
+### Cultural Color Considerations
+
+| Color | Western | East Asian | Middle Eastern |
+|-------|---------|-----------|----------------|
+| Red | Danger, stop | Prosperity, luck | Danger |
+| White | Purity, clean | Mourning, death | Purity |
+| Green | Go, success, nature | Youth, fertility | Islam (sacred), paradise |
+| Yellow | Caution, warmth | Royalty, sacred | Happiness, prosperity |
+| Black | Mourning, elegance | Power, formality | Mourning, mystery |
+| Purple | Royalty, luxury | Nobility | Wealth |
+
+**Key Rule**: Test color semantics with your target audience. Never assume universal meaning. Semantic color tokens like `--color-error` are safer than `--color-red` because their meaning transcends cultural interpretation.
+
+### Number & Date Formatting
+
+```javascript
+/* Always use Intl APIs for locale-aware formatting */
+
+/* Numbers */
+new Intl.NumberFormat('de-DE').format(1234567.89);
+// → "1.234.567,89"
+
+new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+  .format(1234.50);
+// → "$1,234.50"
+
+/* Dates */
+new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' })
+  .format(new Date());
+// → "2025年1月30日"
+```
+
+---
+
+## Part 29: Cognitive Accessibility
+
+Accessibility isn't just about screen readers. Design for how brains work -- including brains that work differently.
+
+### Designing for ADHD
+
+```css
+/* Focus mode: reduce visual noise on demand */
+[data-focus-mode="true"] .sidebar,
+[data-focus-mode="true"] .notifications,
+[data-focus-mode="true"] .decorative {
+  display: none;
+}
+
+[data-focus-mode="true"] .main-content {
+  max-width: 65ch;
+  margin-inline: auto;
+}
+
+[data-focus-mode="true"] .nav {
+  /* Simplified navigation */
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+[data-focus-mode="true"] .nav:hover,
+[data-focus-mode="true"] .nav:focus-within {
+  opacity: 1;
+}
+```
+
+Key principles for ADHD:
+- Reduce visual noise: clear hierarchy, minimal competing elements
+- Chunk information: short paragraphs, bullet points, clear headings
+- Provide focus mode: ability to hide sidebar, notifications, decorative elements
+- Undo support: forgiveness for impulsive actions
+- Clear progress indicators: show where the user is and what's left
+
+### Designing for Autism Spectrum
+
+```css
+/* Sensory-reduced mode */
+[data-sensory-reduced="true"] {
+  --transition-speed: 0s;
+  --animation-speed: 0s;
+}
+
+[data-sensory-reduced="true"] * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+[data-sensory-reduced="true"] .decorative-bg,
+[data-sensory-reduced="true"] .particle-effect,
+[data-sensory-reduced="true"] .video-background {
+  display: none;
+}
+```
+
+Key principles:
+- Predictable layouts: consistent navigation placement, no surprise modals
+- Clear, literal language: no idioms in button labels ("Get started" not "Jump in")
+- Warn before changes: transitions, redirects, automatic content updates
+- Consistent patterns: same action should always look and work the same way
+
+### Designing for Dyslexia
+
+```css
+/* Dyslexia-friendly typography */
+.content {
+  font-family: 'Open Sans', 'Verdana', sans-serif; /* Avoid serif and italic */
+  font-size: 1rem;    /* Minimum 16px */
+  line-height: 1.6;   /* 1.5x minimum */
+  letter-spacing: 0.02em;
+  word-spacing: 0.05em;
+  text-align: left;   /* NEVER justify - irregular spacing is harder to read */
+}
+
+/* Avoid pure white backgrounds (glare) */
+.content {
+  background: #fafafa; /* Slight off-white reduces contrast fatigue */
+  color: #2d2d2d;      /* Dark gray, not pure black */
+}
+
+/* Adequate paragraph spacing */
+.content p + p {
+  margin-top: 1.2em;
+}
+
+/* Short line lengths improve tracking */
+.content {
+  max-width: 60ch;
+}
+```
+
+**Key Rule**: These patterns benefit ALL readers, not just those with dyslexia. Good reading ergonomics are universal.
+
+### Vestibular Disorder Considerations
+
+```css
+/* Comprehensive reduced motion -- go further than the basics */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Remove parallax, zoom, and rotation effects */
+  .parallax { transform: none !important; }
+  .zoom-on-hover:hover { transform: none !important; }
+
+  /* Disable video backgrounds */
+  .video-background video { display: none; }
+  .video-background { background-image: url('/static-fallback.jpg'); }
+
+  /* Remove scroll-driven animations */
+  * { animation-timeline: none !important; }
+}
+```
+
+Some users need ZERO motion, not just reduced motion. Provide an explicit "disable all animations" toggle beyond what `prefers-reduced-motion` offers.
+
+Cross-reference: Part 8 (Motion), Part 11 (Accessibility Checklist).
+
+### Aging-Friendly Patterns
+
+- Touch targets: 48px minimum (larger than the standard 44px)
+- Contrast: target 7:1 for body text (higher than WCAG AA 4.5:1)
+- Default text: 18px minimum body size
+- Navigation: fewer levels, clearer labels, no hover-only reveals
+- Error recovery: generous timeouts, clear confirmation dialogs, large undo buttons
+
+### Cognitive Load Reduction
+
+| Principle | Implementation |
+|-----------|----------------|
+| One primary action per screen | Single prominent CTA, secondary actions visually subdued |
+| Progressive disclosure | Hide advanced options behind "More" or `<details>` |
+| Consistent patterns | Same action looks and works the same everywhere |
+| Meaningful defaults | Pre-select the most common option |
+| Chunked information | Break long forms into steps, long text into sections |
+| Clear wayfinding | Breadcrumbs, progress bars, "you are here" indicators |
+
+Cross-reference: Part 9 (UX Principles) for Hick's Law and Miller's Law.
+
+---
+
+## Part 30: Design Token Architecture
+
+Tokens are the single source of truth for your design system. Get the architecture right and theming, maintenance, and consistency follow naturally.
+
+### Three-Tier Token Structure
+
+```css
+/* TIER 1: Constant/Primitive tokens - raw values, never used directly in components */
+:root {
+  --primitive-blue-50: #eff6ff;
+  --primitive-blue-500: #3b82f6;
+  --primitive-blue-700: #1d4ed8;
+  --primitive-gray-50: #f9fafb;
+  --primitive-gray-900: #111827;
+  --primitive-radius-sm: 4px;
+  --primitive-radius-md: 8px;
+  --primitive-space-1: 4px;
+  --primitive-space-2: 8px;
+  --primitive-space-4: 16px;
+  --primitive-space-6: 24px;
+}
+
+/* TIER 2: Semantic tokens - purpose-based, reference primitives */
+:root {
+  --color-interactive: var(--primitive-blue-500);
+  --color-interactive-hover: var(--primitive-blue-700);
+  --color-surface: var(--primitive-gray-50);
+  --color-text-primary: var(--primitive-gray-900);
+  --radius-component: var(--primitive-radius-md);
+  --spacing-component-padding: var(--primitive-space-4);
+}
+
+/* TIER 3: Component tokens - scoped to specific components */
+.button {
+  --button-bg: var(--color-interactive);
+  --button-bg-hover: var(--color-interactive-hover);
+  --button-padding: var(--spacing-component-padding);
+  --button-radius: var(--radius-component);
+
+  background: var(--button-bg);
+  padding: var(--button-padding);
+  border-radius: var(--button-radius);
+}
+
+.button:hover {
+  background: var(--button-bg-hover);
+}
+```
+
+**Flow**: Primitive → Semantic → Component. Components only reference component tokens. Semantic tokens only reference primitives. This creates clean separation of concerns.
+
+### Naming Conventions
+
+Pattern: `category-subcategory-variant-state`
+
+| Category | Examples |
+|----------|---------|
+| `color-` | `color-text-primary`, `color-surface-elevated`, `color-border-subtle` |
+| `spacing-` | `spacing-component-gap`, `spacing-section-padding` |
+| `typography-` | `typography-heading-size`, `typography-body-weight` |
+| `elevation-` | `elevation-card`, `elevation-modal` |
+| `radius-` | `radius-button`, `radius-input`, `radius-card` |
+| `motion-` | `motion-duration-fast`, `motion-easing-default` |
+
+**Key Rule**: Names describe purpose, never appearance. Use `--color-interactive`, not `--color-blue`. Use `--color-error`, not `--color-red`. When the brand color changes from blue to green, only primitive tokens change.
+
+### Multi-Theme Token Mapping
+
+```css
+/* Theme mapping through semantic tokens */
+[data-theme="light"] {
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f5f5f5;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-border: #e0e0e0;
+  --color-interactive: hsl(220, 90%, 50%);
+}
+
+[data-theme="dark"] {
+  --color-surface: #121212;
+  --color-surface-elevated: #1e1e1e;
+  --color-text-primary: #e5e5e5;
+  --color-text-secondary: #a0a0a0;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-interactive: hsl(220, 70%, 65%);
+}
+
+[data-theme="high-contrast"] {
+  --color-surface: #000000;
+  --color-surface-elevated: #1a1a1a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e0e0e0;
+  --color-border: #ffffff;
+  --color-interactive: hsl(220, 100%, 70%);
+}
+```
+
+Components don't change at all between themes -- only the semantic token values change. Cross-reference: Part 20 (Dark Mode) for implementation patterns.
+
+### Token Maintenance
+
+- **Audit regularly**: search for hardcoded values (`#`, `rgb(`, `hsl(`, `px` outside tokens)
+- **Deprecation strategy**: rename → alias old to new → remove old after migration
+- **Avoid token explosion**: don't create `--button-primary-hover-border-color` if `--color-interactive-hover` works
+- **Document usage**: each token should have a description of where and when to use it
+- **W3C Design Tokens format**: use JSON tokens as source of truth if integrating with design tools
+
+```json
+{
+  "color": {
+    "interactive": {
+      "$value": "{primitive.blue.500}",
+      "$type": "color",
+      "$description": "Primary interactive elements: buttons, links, toggles"
+    }
+  }
+}
+```
+
+### Quick Reference
+
+| Tier | Changes When | Example |
+|------|-------------|---------|
+| Primitive | Brand refresh, new palette | `--primitive-blue-500: #3b82f6` |
+| Semantic | Feature redesign, new patterns | `--color-interactive: var(--primitive-blue-500)` |
+| Component | Component-specific tweaks | `--button-bg: var(--color-interactive)` |
+
+---
+
+## Part 31: CSS Cascade Layers
+
+Cascade layers solve specificity wars in design systems. They give you explicit control over which styles win, regardless of selector complexity.
+
+### Why Layers Matter
+
+```css
+/* WITHOUT layers: specificity battles */
+.component .button { background: blue; }        /* specificity: 0-2-0 */
+.sidebar .component .button { background: red; } /* specificity: 0-3-0, wins */
+.button.primary { background: green; }           /* specificity: 0-2-0, loses to red */
+
+/* WITH layers: explicit priority */
+@layer components, overrides;
+
+@layer components {
+  .component .button { background: blue; }
+}
+
+@layer overrides {
+  .button.primary { background: green; } /* Wins because overrides layer > components layer */
+}
+```
+
+**Key Rule**: Layers give you explicit control over which styles win. A simple selector in a higher-priority layer beats a complex selector in a lower-priority layer.
+
+### Layer Ordering for Design Systems
+
+```css
+/* Declare order: first = lowest priority, last = highest */
+@layer reset, base, tokens, layouts, components, utilities, overrides;
+
+@layer reset {
+  /* Normalize or CSS reset */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+}
+
+@layer base {
+  /* Default element styles */
+  body { font-family: var(--font-body); color: var(--color-text-primary); }
+  a { color: var(--color-interactive); }
+}
+
+@layer tokens {
+  /* Design token definitions */
+  :root { --color-primary: #3b82f6; /* ... */ }
+}
+
+@layer layouts {
+  /* Page structure */
+  .container { max-width: 1200px; margin-inline: auto; }
+  .grid { display: grid; }
+}
+
+@layer components {
+  /* Component library */
+  .button { /* ... */ }
+  .card { /* ... */ }
+}
+
+@layer utilities {
+  /* Utility classes (always beat components) */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+  .hidden { display: none; }
+}
+
+@layer overrides {
+  /* Project-specific overrides */
+}
+```
+
+### Importing Third-Party CSS into Layers
+
+```css
+/* Wrap third-party CSS in a low-priority layer */
+@import url('normalize.css') layer(reset);
+@import url('component-library.css') layer(components);
+
+/* Your styles in higher-priority layers always win */
+@layer overrides {
+  .their-button { /* Your customization */ }
+}
+```
+
+### Nested Layers
+
+```css
+/* Organize complex component libraries */
+@layer components {
+  @layer buttons {
+    .button { /* base button */ }
+    .button--primary { /* primary variant */ }
+  }
+
+  @layer forms {
+    .input { /* base input */ }
+    .select { /* base select */ }
+  }
+
+  @layer cards {
+    .card { /* base card */ }
+  }
+}
+
+/* Reference nested layers */
+@layer components.buttons {
+  .button--custom { /* additional button style */ }
+}
+```
+
+### Migration Strategy
+
+Adopt layers incrementally in existing projects:
+
+1. Wrap your existing CSS in a single layer: `@layer legacy { /* all existing CSS */ }`
+2. New CSS goes in properly named layers
+3. Gradually move code from `legacy` into structured layers
+4. Unlayered CSS always beats layered CSS -- use this sparingly for critical overrides
+
+Cross-reference: Part 26 (Component Architecture) for component-scoped layer patterns.
+
 ---
 
 ## Extended Pre-Implementation Checklist
@@ -1365,3 +4049,88 @@ Before finalizing any frontend design, verify:
 - [ ] Only transform/opacity animated for performance
 - [ ] `prefers-reduced-motion` media query implemented
 - [ ] No content that flashes more than 3 times per second
+
+### Modern CSS (Part 18)
+- [ ] Used container queries for component-level responsiveness where appropriate
+- [ ] Leveraged `:has()` for parent-aware styling (reducing JavaScript)
+- [ ] Considered CSS nesting (max 3 levels depth)
+- [ ] Used Popover API for light-dismiss behaviors instead of custom JS
+
+### Performance (Part 19)
+- [ ] LCP element identified and optimized (`fetchpriority="high"`, preload)
+- [ ] All images have explicit `width`/`height` or `aspect-ratio` (CLS prevention)
+- [ ] Font loading uses `font-display: swap` with `size-adjust` fallback
+- [ ] Skeleton loaders match exact dimensions of replaced content
+- [ ] Only `transform`/`opacity` animated (no layout-triggering properties)
+- [ ] Resource hints applied (preload, preconnect, prefetch)
+
+### Dark Mode & Theming (Part 20)
+- [ ] System preference detected via `prefers-color-scheme`
+- [ ] User override available with three-state toggle (System/Light/Dark)
+- [ ] Colors desaturated ~20% for dark mode
+- [ ] No pure black backgrounds (use `#121212` or similar)
+- [ ] Elevation through surface lightness, not shadows in dark mode
+- [ ] `forced-colors` media query handled for Windows High Contrast
+
+### AI Interfaces (Part 21)
+- [ ] Streaming content has visible typing indicator and auto-scroll
+- [ ] AI loading states communicate progress phases (not just spinners)
+- [ ] Confidence levels visible when AI certainty varies
+- [ ] User can cancel, undo, regenerate, and edit AI output
+- [ ] Error states offer manual fallback when AI is unavailable
+
+### Interaction Design (Part 22)
+- [ ] Every state has a designed view (empty, loading, error, partial, complete)
+- [ ] Gestures have non-gesture alternatives for accessibility
+- [ ] Progressive disclosure used for complex features
+- [ ] State transitions animated smoothly
+
+### Data Visualization (Part 23)
+- [ ] Charts have text alternatives for screen readers
+- [ ] Color is not the only way to distinguish data series
+- [ ] Tables have sticky headers and clear sort indicators
+- [ ] Real-time data batched to prevent visual noise
+
+### Typography (Part 24)
+- [ ] Font sizes use `clamp()` for fluid scaling
+- [ ] Line length constrained to 45-75 characters
+- [ ] `text-wrap: balance` applied to headings
+- [ ] Tabular numbers used for data columns
+
+### Images (Part 25)
+- [ ] Images served in AVIF/WebP with JPEG fallback
+- [ ] LCP image uses `fetchpriority="high"` and is not lazy-loaded
+- [ ] All images have `aspect-ratio` or explicit dimensions
+- [ ] `sizes` attribute included on responsive images
+
+### Component Architecture (Part 26)
+- [ ] Components use design token inheritance
+- [ ] Accessibility baked into components (not opt-in)
+- [ ] CSS organized with cascade layers
+
+### Forms (Part 27)
+- [ ] Error messages are specific and appear inline with the field
+- [ ] Validation triggers on blur, not on every keystroke
+- [ ] Multi-step forms preserve data on back navigation
+- [ ] All inputs use appropriate `autocomplete` attributes
+
+### Internationalization (Part 28)
+- [ ] CSS uses logical properties (`margin-inline`, `padding-block`)
+- [ ] Layout accommodates 30% text expansion for translation
+- [ ] Color semantics tested with target audience
+
+### Cognitive Accessibility (Part 29)
+- [ ] Body text at 1.5x line-height minimum, left-aligned
+- [ ] One primary action per screen
+- [ ] Reduced-motion mode is comprehensive (zero motion option)
+- [ ] Focus mode available to reduce visual noise
+
+### Design Tokens (Part 30)
+- [ ] Tokens follow three-tier structure (constant → semantic → contextual)
+- [ ] Token names describe purpose, not appearance
+- [ ] Theme switching uses semantic tokens only (no hardcoded values)
+
+### Cascade Layers (Part 31)
+- [ ] CSS organized with `@layer` declarations
+- [ ] Third-party CSS wrapped in low-priority layers
+- [ ] Component styles don't rely on specificity to override
